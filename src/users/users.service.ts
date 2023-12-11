@@ -39,9 +39,15 @@ export class UserService {
       name,
       lastName,
       roles,
+      identification,
     });
 
     return this.generateResponse(newUser); // Devuelve solo las propiedades deseadas
+  }
+
+  async create(body: SignUpDto) {
+    const newUser = new this.userModel(body);
+    return newUser.save();
   }
 
   async getAll(

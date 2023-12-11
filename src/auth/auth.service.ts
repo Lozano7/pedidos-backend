@@ -39,7 +39,14 @@ export class AuthService {
     return this.generateToken(user);
   }
 
-  async register({ email, password, name, lastName, roles }: SignUpDto) {
+  async register({
+    email,
+    password,
+    name,
+    lastName,
+    roles,
+    identification,
+  }: SignUpDto) {
     // Verifica si el usuario ya existe
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
@@ -59,6 +66,7 @@ export class AuthService {
       name,
       lastName,
       roles,
+      identification,
     });
 
     return this.generateToken(newUser); // Devuelve solo las propiedades deseadas
