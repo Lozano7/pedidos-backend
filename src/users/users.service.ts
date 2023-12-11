@@ -77,6 +77,24 @@ export class UserService {
     return { data, total, page, limit };
   }
 
+  async update(id, body: SignUpDto) {
+    const user = await this.userModel.findByIdAndUpdate(id, body, {
+      new: true,
+    });
+    if (!user) {
+      throw new UnauthorizedException('El usuario no existe');
+    }
+    return user;
+  }
+
+  async delete(id) {
+    const user = await this.userModel.findByIdAndDelete(id);
+    if (!user) {
+      throw new UnauthorizedException('El usuario no existe');
+    }
+    return user;
+  }
+
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
   }

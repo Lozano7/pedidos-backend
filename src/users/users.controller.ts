@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -12,7 +21,7 @@ export class UsersController {
 
   //obtener todos los usuarios
   @Roles('ADMIN')
-  @Post('register')
+  @Post()
   async register(@Body() signUpDto: SignUpDto) {
     return this.userService.register(signUpDto);
   }
@@ -34,5 +43,16 @@ export class UsersController {
       page: users.page,
       limit: users.limit,
     };
+  }
+  @Roles('ADMIN')
+  @Patch(':id')
+  async update(@Query('id') id: string, @Body() body: SignUpDto) {
+    return this.userService.update(id, body);
+  }
+
+  @Roles('ADMIN')
+  @Delete(':id')
+  async delete(@Query('id') id: string) {
+    return this.userService.delete(id);
   }
 }
