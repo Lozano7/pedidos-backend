@@ -18,6 +18,9 @@ export class User {
   @Prop({ required: true })
   lastName: string;
 
+  @Prop({ required: true, unique: true })
+  identification: string;
+
   @Prop({ required: true })
   roles: ROLES[];
 }

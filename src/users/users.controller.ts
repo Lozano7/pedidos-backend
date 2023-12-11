@@ -1,28 +1,31 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { UserService } from './users.service';
 
 @Controller('users')
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
   //obtener todos los usuarios
-  @Get('all')
-  async getAll() {
-    const users = await this.userService.getAll();
-    return users.map((user) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...result } = user.toJSON();
-      return result;
-    });
-  }
+  @Roles('ADMIN')
+  @Get()
+  async getAll(
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('search') search: string,
+  ) {
+    const users = await this.userService.getAll(search, page, limit);
 
-  //obtener un usuario por email
-  @Get(':email')
-  async findOneById(@Param('email') email: string): Promise<any> {
-    const resultado = await this.userService.findByEmail(email);
-    console.log('resultado', resultado._id.toString());
-    return resultado;
+    console.log(users.data);
+
+    return {
+      data: await this.userService.formatResponse(users.data),
+      total: users.total,
+      page: users.page,
+      limit: users.limit,
+    };
   }
 }
