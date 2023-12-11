@@ -1,14 +1,48 @@
 // user.service.ts
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SignUpDto } from 'src/auth/dto/signUpDto';
+import * as bcrypt from 'bcrypt';
 import { User, UserDocument } from './model/user.model';
+import { InvalidPasswordException } from 'src/utils/errors';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+
+  async register({
+    email,
+    password,
+    name,
+    lastName,
+    roles,
+    identification,
+  }: SignUpDto) {
+    // Verifica si el usuario ya existe
+    const existingUser = await this.findByEmail(email);
+    if (existingUser) {
+      throw new UnauthorizedException('El usuario ya existe');
+    }
+
+    // Valida la contraseña
+    if (!this.validatePassword(password)) {
+      throw new InvalidPasswordException();
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crea y guarda el nuevo usuario en la base de datos utilizando el servicio de usuario
+    const newUser = await this.create({
+      email,
+      password: hashedPassword,
+      name,
+      lastName,
+      roles,
+    });
+
+    return this.generateResponse(newUser); // Devuelve solo las propiedades deseadas
+  }
 
   async getAll(
     search: string = '',
@@ -45,11 +79,6 @@ export class UserService {
     return this.userModel.findById(id).select('-password').exec();
   }
 
-  async create(body: SignUpDto) {
-    const newUser = new this.userModel(body);
-    return newUser.save();
-  }
-
   async formatResponse(
     user: UserDocument | UserDocument[],
   ): Promise<UserDocument | UserDocument[]> {
@@ -73,5 +102,24 @@ export class UserService {
       };
     }
     return response;
+  }
+
+  public async generateResponse(user: any) {
+    return {
+      email: user.email,
+      roles: user.roles,
+      fullName: `${user.name} ${user.lastName}`,
+      name: user.name,
+      lastName: user.lastName,
+      identification: user.identification,
+    };
+  }
+
+  private validatePassword(password: string): boolean {
+    // Implementa lógica de validación según tus criterios
+    // Aquí se requieren al menos 8 caracteres, 1 letra mayúscula, 1 número y 1 carácter especial
+    const passwordRegex =
+      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
   }
 }
