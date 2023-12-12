@@ -11,11 +11,11 @@ import {
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { SignUpDto } from './dto/signUpDto';
 import { UserService } from './users.service';
+import { SignUpDto } from './dto/signUpDto';
 
 @Controller('users')
-@UseGuards(AuthGuard, RolesGuard)
+// @UseGuards(AuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
@@ -34,6 +34,8 @@ export class UsersController {
     @Query('search') search: string,
   ) {
     const users = await this.userService.getAll(search, page, limit);
+
+    console.log(users.data);
 
     return {
       data: await this.userService.formatResponse(users.data),

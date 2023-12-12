@@ -82,15 +82,15 @@ export class UserService {
       new: true,
     });
     if (!user) {
-      throw new UnauthorizedException('El usuario no existe');
+      throw new Error('El usuario no existe');
     }
     return user;
   }
 
-  async delete(id) {
-    const user = await this.userModel.findByIdAndDelete(id);
+  async delete(identificacion: string) {
+    const user = await this.userModel.findOneAndDelete({ identificacion });
     if (!user) {
-      throw new UnauthorizedException('El usuario no existe');
+      throw new Error('El usuario no existe');
     }
     return user;
   }
