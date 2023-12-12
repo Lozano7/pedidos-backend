@@ -32,8 +32,6 @@ export class AuthGuard implements CanActivate {
     const tokenWithBearer = req.headers['authorization'];
     const token = tokenWithBearer?.split(' ')[1];
 
-    console.log('token: ', token);
-
     if (!token || Array.isArray(token)) {
       throw new UnauthorizedException('Token inválido');
     }

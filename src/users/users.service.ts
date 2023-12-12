@@ -2,11 +2,11 @@
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { SignUpDto } from 'src/auth/dto/signUpDto';
-import * as bcrypt from 'bcrypt';
-import { User, UserDocument } from './model/user.model';
 import { InvalidPasswordException } from 'src/utils/errors';
+import { User, UserDocument } from './model/user.model';
 
 @Injectable()
 export class UserService {
@@ -25,7 +25,6 @@ export class UserService {
     if (existingUser) {
       throw new UnauthorizedException('El usuario ya existe');
     }
-
     // Valida la contraseña
     if (!this.validatePassword(password)) {
       throw new InvalidPasswordException();
@@ -47,6 +46,7 @@ export class UserService {
 
   async create(body: SignUpDto) {
     const newUser = new this.userModel(body);
+    console.log('user: ', newUser);
     return newUser.save();
   }
 

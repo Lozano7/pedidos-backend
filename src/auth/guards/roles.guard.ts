@@ -22,7 +22,6 @@ export class RolesGuard implements CanActivate {
       context.getHandler(),
     );
     if (isPublic) {
-      console.log('entro aqui en isPublic');
       return true;
     }
 
@@ -37,16 +36,10 @@ export class RolesGuard implements CanActivate {
 
     const { roles: rolesUser } = req;
 
-    console.log('Contiene roles: ', rolesUser.includes(admin));
-
-    console.log('roles', roles);
-
     if (roles === undefined) {
       if (!admin) {
-        console.log('entro aqui !admin');
         return true;
       } else if (admin && rolesUser.includes(admin)) {
-        console.log('entro aqui en admin && rolesUser.includes(admin)');
         return true;
       } else {
         throw new UnauthorizedException(
