@@ -1,5 +1,3 @@
-// user.model.ts
-
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ROLES } from 'src/constants/roles';

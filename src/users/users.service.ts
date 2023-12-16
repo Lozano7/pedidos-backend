@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { SignUpDto } from 'src/auth/dto/signUpDto';
 import { InvalidPasswordException } from 'src/utils/errors';
+import { EditUserDto } from './dto/editUserDto';
 import { User, UserDocument } from './model/user.model';
 
 @Injectable()
@@ -77,10 +78,16 @@ export class UserService {
     return { data, total, page, limit };
   }
 
-  async update(id, body: SignUpDto) {
-    const user = await this.userModel.findByIdAndUpdate(id, body, {
-      new: true,
-    });
+  async update(id, body: EditUserDto) {
+    const user = await this.userModel.findOneAndUpdate(
+      {
+        identification: id,
+      },
+      body,
+      {
+        new: true,
+      },
+    );
     if (!user) {
       throw new Error('El usuario no existe');
     }
@@ -88,7 +95,10 @@ export class UserService {
   }
 
   async delete(identificacion: string) {
-    const user = await this.userModel.findOneAndDelete({ identificacion });
+    console.log('ID a eliminar:', identificacion);
+    const user = await this.userModel.findOneAndDelete({
+      identification: identificacion,
+    });
     if (!user) {
       throw new Error('El usuario no existe');
     }
@@ -101,6 +111,21 @@ export class UserService {
 
   async findById(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id).select('-password').exec();
+  }
+
+  async findByIdentification(
+    identification: string,
+  ): Promise<UserDocument | null> {
+    console.log('identification en el service: ', identification);
+    const user = await this.userModel
+      .findOne({ identification })
+      .select('-password')
+      .exec();
+    console.log('user: ', user);
+    if (!user) {
+      throw new Error('El usuario no existe');
+    }
+    return user;
   }
 
   async formatResponse(
