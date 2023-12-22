@@ -105,9 +105,6 @@ export class RestaurantService {
 
   async findByRuc(ruc: string): Promise<RestaurantDocument | null> {
     const restaurant = await this.restaurantModel.findOne({ ruc }).exec();
-    if (!restaurant) {
-      throw new NotFoundException('El restaurante no existe');
-    }
     return restaurant;
   }
 

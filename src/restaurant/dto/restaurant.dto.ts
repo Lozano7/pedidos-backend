@@ -23,7 +23,6 @@ export class RestaurantDto {
   @IsString()
   readonly status;
 
-  @IsNotEmpty()
   @IsString()
   readonly phone;
 

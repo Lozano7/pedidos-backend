@@ -20,6 +20,7 @@ export class UserService {
     lastName,
     roles,
     identification,
+    restaurantId,
   }: SignUpDto) {
     // Verifica si el usuario ya existe
     const existingUser = await this.findByEmail(email);
@@ -39,8 +40,11 @@ export class UserService {
       name,
       lastName,
       roles,
+      restaurantId,
       identification,
     });
+    console.log('restaurantId: ', restaurantId);
+    console.log('newUser: ', newUser);
 
     return this.generateResponse(newUser); // Devuelve solo las propiedades deseadas
   }
@@ -160,6 +164,7 @@ export class UserService {
       fullName: `${user.name} ${user.lastName}`,
       name: user.name,
       lastName: user.lastName,
+      restaurantId: user.restaurantId,
       identification: user.identification,
     };
   }

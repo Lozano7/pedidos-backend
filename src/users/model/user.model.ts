@@ -19,6 +19,9 @@ export class User {
   @Prop({ required: true, unique: true })
   identification: string;
 
+  @Prop()
+  restaurantId: string;
+
   @Prop({ required: true })
   roles: ROLES[];
 }

@@ -33,17 +33,24 @@ export class RestaurantController {
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('search') search: string,
+    @Query('all') all: string,
   ) {
     const users = await this.restaurantService.getAll(search, page, limit);
-
-    console.log(users.data);
-
+    if (all) {
+      return await this.restaurantService.formatResponse(users.data);
+    }
     return {
       data: await this.restaurantService.formatResponse(users.data),
       total: users.total,
       page: users.page,
       limit: users.limit,
     };
+  }
+  @Roles('ADMIN')
+  @Get(':id')
+  async getRestaurantByIdentification(@Param('id') id: string) {
+    const user = await this.restaurantService.findByRuc(id);
+    return this.restaurantService.formatResponse(user);
   }
 
   @Roles('ADMIN')

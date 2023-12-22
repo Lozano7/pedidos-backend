@@ -44,6 +44,7 @@ export class AuthService {
     lastName,
     roles,
     identification,
+    restaurantId,
   }: SignUpDto) {
     // Verifica si el usuario ya existe
     const existingUser = await this.usersService.findByEmail(email);
@@ -64,6 +65,7 @@ export class AuthService {
       name,
       lastName,
       roles,
+      restaurantId,
       identification,
     });
 
