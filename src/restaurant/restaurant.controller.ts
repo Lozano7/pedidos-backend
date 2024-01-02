@@ -46,7 +46,7 @@ export class RestaurantController {
       limit: users.limit,
     };
   }
-  @Roles('ADMIN')
+  @Roles('ADMIN', 'RESTAURANT')
   @Get(':id')
   async getRestaurantByIdentification(@Param('id') id: string) {
     const user = await this.restaurantService.findByRuc(id);

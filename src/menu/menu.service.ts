@@ -11,7 +11,7 @@ export class MenuService {
   async register(body: MenuDto) {
     const existingMenu = await this.findByDate(body.date);
     if (existingMenu) {
-      throw new NotFoundException('El menu ya fue registrado');
+      throw new NotFoundException('El menu ya fue registrado en esa fecha');
     }
 
     const newRestaurant = await this.create(body);
@@ -77,9 +77,45 @@ export class MenuService {
 
     return response;
   }
+  // actulizar segun la fecha
+  async update(date: string, body: MenuDto) {
+    let dateFormated = date.split('-').join('/');
+    const menu = await this.menuModel.findOneAndUpdate(
+      {
+        date: dateFormated,
+      },
+      body,
+      {
+        new: true,
+      },
+    );
+    if (!menu) {
+      throw new NotFoundException('El menu no existe');
+    }
+    return this.formatResponse(menu);
+  }
+
+  async delete(date: string) {
+    let dateFormated = date.split('-').join('/');
+    const menu = await this.menuModel.findOneAndDelete({
+      date: dateFormated,
+    });
+    if (!menu) {
+      throw new NotFoundException('El menu no existe');
+    }
+    return this.formatResponse(menu);
+  }
 
   async findByDate(date: string) {
-    return this.menuModel.findOne({ date });
+    let dateFormated = date.split('-').join('/');
+
+    const menu = await this.menuModel.findOne({
+      date: dateFormated,
+    });
+    if (!menu) {
+      return null;
+    }
+    return this.formatResponse(menu);
   }
 
   async formatResponse(

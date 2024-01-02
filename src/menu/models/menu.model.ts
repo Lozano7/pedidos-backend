@@ -9,6 +9,24 @@ export class Menu {
 
   @Prop({ required: true })
   menus: IMenu[];
+
+  @Prop({ required: true })
+  restaurantId: string;
+
+  @Prop({ required: true })
+  restaurantName: string;
+
+  @Prop({ required: true })
+  restaurantAddress: string;
+
+  @Prop({ required: true })
+  restaurantStartOrderTime: string;
+
+  @Prop({ required: true })
+  restaurantEndOrderTime: string;
+
+  @Prop({ required: true })
+  restaurantDeliveryTime: string;
 }
 
 export type MenuDocument = Menu & Document;

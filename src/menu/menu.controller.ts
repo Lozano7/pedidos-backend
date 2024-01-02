@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -16,7 +26,7 @@ export class MenuController {
     return this.menuService.register(menuDto);
   }
 
-  @Roles('RESTAURANT')
+  @Roles('RESTAURANT', 'USER')
   @Get()
   async getAll(
     @Query('page') page: number,
@@ -36,5 +46,26 @@ export class MenuController {
       page: menus.page,
       limit: menus.limit,
     };
+  }
+
+  @Roles('RESTAURANT')
+  @Get(':fecha')
+  async getByDate(@Param('fecha') fecha: string) {
+    console.log(fecha);
+    return this.menuService.findByDate(fecha);
+  }
+
+  // update
+  @Roles('RESTAURANT')
+  @Patch(':id')
+  async update(@Body() menuDto: MenuDto, @Param('id') id: string) {
+    return this.menuService.update(id, menuDto);
+  }
+
+  // delete
+  @Roles('RESTAURANT')
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.menuService.delete(id);
   }
 }
