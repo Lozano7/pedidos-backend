@@ -77,6 +77,69 @@ export class MenuService {
 
     return response;
   }
+
+  async getAllByDate(
+    search: string = '',
+    page: number = 1,
+    limit: number = 10,
+    all: boolean = false,
+    date: string = new Date().toLocaleDateString('en-US'),
+  ): Promise<
+    | {
+        data: MenuDocument[];
+        total: number;
+        page: number;
+        limit: number;
+      }
+    | MenuDocument[]
+  > {
+    let response = null;
+    const query = search
+      ? {
+          $or: [
+            { date: { $regex: search, $options: 'i' } },
+            { price: { $regex: search, $options: 'i' } },
+          ],
+        }
+      : {};
+
+    if (all) {
+      const menus = await this.menuModel.find(query).exec();
+      response = menus
+        .map((menu) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { _id: menuId } = menu;
+          const result = menu.toJSON();
+          return {
+            ...result,
+            _id: menuId.toString(),
+          };
+        })
+        .filter((menu) => {
+          return menu.date === date;
+        });
+    } else {
+      const menus = await this.menuModel
+        .find(query)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .exec();
+
+      const total = await this.menuModel.countDocuments(query);
+
+      response = {
+        data: menus.filter((menu) => {
+          return menu.date === date;
+        }),
+        total,
+        page,
+        limit,
+      };
+    }
+
+    return response;
+  }
+
   // actulizar segun la fecha
   async update(date: string, body: MenuDto) {
     let dateFormated = date.split('-').join('/');

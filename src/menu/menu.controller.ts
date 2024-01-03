@@ -33,8 +33,20 @@ export class MenuController {
     @Query('limit') limit: number,
     @Query('search') search: string,
     @Query('all') all: boolean,
+    @Query('date') date: string,
   ) {
-    const menus = await this.menuService.getAll(search, page, limit, all);
+    let menus;
+    if (date) {
+      menus = await this.menuService.getAllByDate(
+        search,
+        page,
+        limit,
+        all,
+        date,
+      );
+    } else {
+      menus = await this.menuService.getAll(search, page, limit, all);
+    }
 
     if (Array.isArray(menus)) {
       return menus;
