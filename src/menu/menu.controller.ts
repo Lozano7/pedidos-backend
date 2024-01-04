@@ -34,6 +34,7 @@ export class MenuController {
     @Query('search') search: string,
     @Query('all') all: boolean,
     @Query('date') date: string,
+    @Query('restaurantId') restaurantId: string,
   ) {
     let menus;
     if (date) {
@@ -43,9 +44,16 @@ export class MenuController {
         limit,
         all,
         date,
+        restaurantId,
       );
     } else {
-      menus = await this.menuService.getAll(search, page, limit, all);
+      menus = await this.menuService.getAll(
+        search,
+        page,
+        limit,
+        all,
+        restaurantId,
+      );
     }
 
     if (Array.isArray(menus)) {
@@ -61,10 +69,13 @@ export class MenuController {
   }
 
   @Roles('RESTAURANT')
-  @Get(':fecha')
-  async getByDate(@Param('fecha') fecha: string) {
+  @Get(':fecha/:restaurantId')
+  async getByDate(
+    @Param('fecha') fecha: string,
+    @Param('restaurantId') restaurantId: string,
+  ) {
     console.log(fecha);
-    return this.menuService.findByDate(fecha);
+    return this.menuService.findByDate(fecha, restaurantId);
   }
 
   // update
@@ -76,8 +87,11 @@ export class MenuController {
 
   // delete
   @Roles('RESTAURANT')
-  @Delete(':id')
-  async delete(@Param('id') id: string) {
-    return this.menuService.delete(id);
+  @Delete(':id/:restaurantId')
+  async delete(
+    @Param('id') id: string,
+    @Param('restaurantId') restaurantId: string,
+  ) {
+    return this.menuService.delete(id, restaurantId);
   }
 }

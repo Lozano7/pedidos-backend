@@ -9,7 +9,7 @@ export class MenuService {
   constructor(@InjectModel(Menu.name) private menuModel: Model<MenuDocument>) {}
 
   async register(body: MenuDto) {
-    const existingMenu = await this.findByDate(body.date);
+    const existingMenu = await this.findByDate(body.date, body.restaurantId);
     if (existingMenu) {
       throw new NotFoundException('El menu ya fue registrado en esa fecha');
     }
@@ -28,6 +28,7 @@ export class MenuService {
     page: number = 1,
     limit: number = 10,
     all: boolean = false,
+    restaurantId: string = '',
   ): Promise<
     | {
         data: MenuDocument[];
@@ -38,14 +39,19 @@ export class MenuService {
     | MenuDocument[]
   > {
     let response = null;
+
+    //validar que si llega el id del restaurante se filtre por ese id en el query
     const query = search
       ? {
           $or: [
             { date: { $regex: search, $options: 'i' } },
             { price: { $regex: search, $options: 'i' } },
           ],
+          ...(restaurantId && { restaurantId }),
         }
-      : {};
+      : {
+          ...(restaurantId && { restaurantId }),
+        };
 
     if (all) {
       const menus = await this.menuModel.find(query).exec();
@@ -84,6 +90,7 @@ export class MenuService {
     limit: number = 10,
     all: boolean = false,
     date: string = new Date().toLocaleDateString('en-US'),
+    restaurantId: string = '',
   ): Promise<
     | {
         data: MenuDocument[];
@@ -100,24 +107,24 @@ export class MenuService {
             { date: { $regex: search, $options: 'i' } },
             { price: { $regex: search, $options: 'i' } },
           ],
+          ...(restaurantId && { restaurantId }),
         }
-      : {};
+      : {
+          ...(restaurantId && { restaurantId }),
+          date,
+        };
 
     if (all) {
       const menus = await this.menuModel.find(query).exec();
-      response = menus
-        .map((menu) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { _id: menuId } = menu;
-          const result = menu.toJSON();
-          return {
-            ...result,
-            _id: menuId.toString(),
-          };
-        })
-        .filter((menu) => {
-          return menu.date === date;
-        });
+      response = menus.map((menu) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _id: menuId } = menu;
+        const result = menu.toJSON();
+        return {
+          ...result,
+          _id: menuId.toString(),
+        };
+      });
     } else {
       const menus = await this.menuModel
         .find(query)
@@ -128,9 +135,7 @@ export class MenuService {
       const total = await this.menuModel.countDocuments(query);
 
       response = {
-        data: menus.filter((menu) => {
-          return menu.date === date;
-        }),
+        data: menus,
         total,
         page,
         limit,
@@ -146,6 +151,7 @@ export class MenuService {
     const menu = await this.menuModel.findOneAndUpdate(
       {
         date: dateFormated,
+        restaurantId: body.restaurantId,
       },
       body,
       {
@@ -158,10 +164,11 @@ export class MenuService {
     return this.formatResponse(menu);
   }
 
-  async delete(date: string) {
+  async delete(date: string, restaurantId: string) {
     let dateFormated = date.split('-').join('/');
     const menu = await this.menuModel.findOneAndDelete({
       date: dateFormated,
+      restaurantId,
     });
     if (!menu) {
       throw new NotFoundException('El menu no existe');
@@ -169,11 +176,12 @@ export class MenuService {
     return this.formatResponse(menu);
   }
 
-  async findByDate(date: string) {
+  async findByDate(date: string, restaurantId: string) {
     let dateFormated = date.split('-').join('/');
 
     const menu = await this.menuModel.findOne({
       date: dateFormated,
+      restaurantId,
     });
     if (!menu) {
       return null;
