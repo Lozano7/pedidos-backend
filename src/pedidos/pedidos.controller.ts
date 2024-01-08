@@ -4,7 +4,6 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Query,
   UseGuards,
@@ -12,8 +11,8 @@ import {
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
-import { PedidosService } from './pedidos.service';
 import { PedidoDto } from './dto/pedido.dto';
+import { PedidosService } from './pedidos.service';
 
 @Controller('pedidos')
 @UseGuards(AuthGuard, RolesGuard)
@@ -66,6 +65,25 @@ export class PedidosController {
       page: pedidos.page,
       limit: pedidos.limit,
     };
+  }
+
+  @Roles('RESTAURANT', 'USER')
+  @Get(':date/:restaurantId/:clientId')
+  async getIsExistingPedido(
+    @Param('date') date: string,
+    @Param('restaurantId') restaurantId: string,
+    @Param('clientId') clientId: string,
+  ) {
+    let dateFormated = date.split('-').join('/');
+    const pedido = await this.pedidosService.isClientHasOrder(
+      dateFormated,
+      restaurantId,
+      clientId,
+    );
+    if (!pedido) {
+      return null;
+    }
+    return this.pedidosService.formatResponse(pedido);
   }
 
   // delete

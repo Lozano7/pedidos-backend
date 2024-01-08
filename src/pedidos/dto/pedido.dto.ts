@@ -7,6 +7,10 @@ export class PedidoDto {
 
   @IsNotEmpty()
   @IsString()
+  readonly nameClient;
+
+  @IsNotEmpty()
+  @IsString()
   readonly clientId;
 
   @IsNotEmpty()

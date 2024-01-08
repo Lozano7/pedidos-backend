@@ -96,6 +96,7 @@ export class AuthService {
   public async generateToken(user: any) {
     const payload = { email: user.email, sub: user._id, roles: user.roles };
     return {
+      identification: user.identification,
       email: user.email,
       roles: user.roles,
       fullName: `${user.name} ${user.lastName}`,
