@@ -18,7 +18,7 @@ export class SoupService {
       restaurantId: body.restaurantId,
     });
     if (existingSoup) {
-      throw new InternalServerErrorException('El rol ya existe');
+      throw new InternalServerErrorException('La sopa ya existe');
     }
 
     const newSoup = new this.soupModel(body);
@@ -32,6 +32,7 @@ export class SoupService {
   }
 
   async getAll(
+    restaurantId: string = '',
     search: string = '',
     page: number = 1,
     limit: number = 10,
@@ -52,8 +53,11 @@ export class SoupService {
             { name: { $regex: search, $options: 'i' } },
             { type: { $regex: search, $options: 'i' } },
           ],
+          ...(restaurantId && { restaurantId }),
         }
-      : {};
+      : {
+          ...(restaurantId && { restaurantId }),
+        };
 
     if (all) {
       const soups = await this.soupModel.find(query).exec();
@@ -85,16 +89,19 @@ export class SoupService {
     return response;
   }
 
-  async getSoupByName(name: string): Promise<SoupDocument> {
-    const soup = await this.soupModel.findOne({ name }).exec();
+  async getSoupByName(
+    name: string,
+    restaurantId: string,
+  ): Promise<SoupDocument> {
+    const soup = await this.soupModel.findOne({ name, restaurantId }).exec();
     return soup;
   }
 
-  async update(name: string, restaurantId: string, body: SoupDto) {
+  async update(body: SoupDto) {
     const soup = await this.soupModel.findOneAndUpdate(
       {
-        name,
-        restaurantId,
+        name: body.name,
+        restaurantId: body.restaurantId,
       },
       body,
       {
@@ -107,14 +114,39 @@ export class SoupService {
     return soup;
   }
 
-  async delete(name: string, restaurantId: string) {
+  async delete(body: SoupDto) {
     const soup = await this.soupModel.findOneAndDelete({
-      name,
-      restaurantId,
+      name: body.name,
+      restaurantId: body.restaurantId,
     });
     if (!soup) {
       throw new NotFoundException('La sopa no existe');
     }
     return soup;
+  }
+
+  async formatResponse(
+    soup: SoupDocument | SoupDocument[],
+  ): Promise<SoupDocument | SoupDocument[]> {
+    let response = null;
+    if (Array.isArray(soup)) {
+      response = soup.map((rstr) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _id: rstrId } = rstr;
+        const result = rstr.toJSON();
+        return {
+          ...result,
+          _id: rstrId.toString(),
+        };
+      });
+    } else {
+      const result = soup.toJSON();
+      const { _id: rstrId } = soup;
+      response = {
+        ...result,
+        _id: rstrId.toString(),
+      };
+    }
+    return response;
   }
 }

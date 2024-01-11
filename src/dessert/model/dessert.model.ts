@@ -8,6 +8,9 @@ export class Dessert {
 
   @Prop({ required: true })
   type: string;
+
+  @Prop({ required: true })
+  restaurantId: string;
 }
 
 export type DessertDocument = Dessert & Document;

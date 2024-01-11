@@ -8,4 +8,8 @@ export class DrinkDto {
   @IsNotEmpty()
   @IsString()
   readonly type;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly restaurantId;
 }
