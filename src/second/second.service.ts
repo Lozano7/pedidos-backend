@@ -118,7 +118,7 @@ export class SecondService {
     return second;
   }
 
-  async delete(body: SecondDto) {
+  async delete(body: { name: string; restaurantId: string }) {
     const second = await this.secondModel.findOneAndDelete({
       name: body.name,
       restaurantId: body.restaurantId,

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -64,8 +65,26 @@ export class SoupController {
 
   //Eliminar
   @Roles('RESTAURANT')
-  @Delete(':name')
-  async delete(@Body() body: SoupDto) {
-    return this.soupService.delete(body);
+  @Delete(':name/:restaurantId')
+  async delete(
+    @Param('name') name: string,
+    @Param('restaurantId') restaurantId: string,
+  ) {
+    return this.soupService.delete({
+      name: name.split('-').join(' '),
+      restaurantId,
+    });
+  }
+
+  @Roles('RESTAURANT')
+  @Get(':name/:restaurantId')
+  async getSoupByNameByRestaurantId(
+    @Param('name') name: string,
+    @Param('restaurantId') restaurantId: string,
+  ) {
+    return this.soupService.getSoupByNameByRestaurantId(
+      name.split('-').join(' '),
+      restaurantId,
+    );
   }
 }

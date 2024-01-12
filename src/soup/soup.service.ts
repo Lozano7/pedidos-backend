@@ -89,12 +89,15 @@ export class SoupService {
     return response;
   }
 
-  async getSoupByName(
+  async getSoupByNameByRestaurantId(
     name: string,
     restaurantId: string,
-  ): Promise<SoupDocument> {
+  ): Promise<SoupDocument | SoupDocument[]> {
     const soup = await this.soupModel.findOne({ name, restaurantId }).exec();
-    return soup;
+    if (soup) {
+      return this.formatResponse(soup);
+    }
+    return null;
   }
 
   async update(body: SoupDto) {
@@ -114,7 +117,7 @@ export class SoupService {
     return soup;
   }
 
-  async delete(body: SoupDto) {
+  async delete(body: { name: string; restaurantId: string }) {
     const soup = await this.soupModel.findOneAndDelete({
       name: body.name,
       restaurantId: body.restaurantId,

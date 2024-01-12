@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -64,8 +65,14 @@ export class SecondController {
 
   //Eliminar
   @Roles('RESTAURANT')
-  @Delete(':name')
-  async delete(@Body() body: SecondDto) {
-    return this.secondService.delete(body);
+  @Delete(':name/:restaurantId')
+  async delete(
+    @Param('name') name: string,
+    @Param('restaurantId') restaurantId: string,
+  ) {
+    return this.secondService.delete({
+      name: name.split('-').join(' '),
+      restaurantId,
+    });
   }
 }
