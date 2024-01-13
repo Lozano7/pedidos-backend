@@ -91,20 +91,23 @@ export class SecondService {
     return response;
   }
 
-  async getSecondByName(
+  async getSecondByNameByRestaurantId(
     name: string,
     restaurantId: string,
-  ): Promise<SecondDocument> {
+  ): Promise<SecondDocument | SecondDocument[]> {
     const second = await this.secondModel
       .findOne({ name, restaurantId })
       .exec();
-    return second;
+    if (second) {
+      return this.formatResponse(second);
+    }
+    return null;
   }
 
-  async update(body: SecondDto) {
+  async update({ name, body }: { name: string; body: SecondDto }) {
     const second = await this.secondModel.findOneAndUpdate(
       {
-        name: body.name,
+        name,
         restaurantId: body.restaurantId,
       },
       body,
@@ -119,14 +122,14 @@ export class SecondService {
   }
 
   async delete(body: { name: string; restaurantId: string }) {
-    const second = await this.secondModel.findOneAndDelete({
+    const soup = await this.secondModel.findOneAndDelete({
       name: body.name,
       restaurantId: body.restaurantId,
     });
-    if (!second) {
+    if (!soup) {
       throw new NotFoundException('El segundo no existe');
     }
-    return second;
+    return soup;
   }
 
   async formatResponse(

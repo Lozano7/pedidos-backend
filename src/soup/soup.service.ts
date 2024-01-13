@@ -100,10 +100,10 @@ export class SoupService {
     return null;
   }
 
-  async update(body: SoupDto) {
+  async update({ name, body }: { name: string; body: SoupDto }) {
     const soup = await this.soupModel.findOneAndUpdate(
       {
-        name: body.name,
+        name,
         restaurantId: body.restaurantId,
       },
       body,

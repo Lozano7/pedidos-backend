@@ -59,8 +59,11 @@ export class SoupController {
   //Editar
   @Roles('RESTAURANT')
   @Patch(':name')
-  async update(@Body() body: SoupDto) {
-    return this.soupService.update(body);
+  async update(@Param('name') name: string, @Body() body: SoupDto) {
+    return this.soupService.update({
+      name: name.split('-').join(' '),
+      body,
+    });
   }
 
   //Eliminar

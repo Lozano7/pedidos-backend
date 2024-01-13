@@ -91,18 +91,21 @@ export class DrinkService {
     return response;
   }
 
-  async getDrinkByName(
+  async getDrinkByNameByRestaurantId(
     name: string,
     restaurantId: string,
-  ): Promise<DrinkDocument> {
-    const drink = await this.drinkModel.findOne({ name, restaurantId }).exec();
-    return drink;
+  ): Promise<DrinkDocument | DrinkDocument[]> {
+    const soup = await this.drinkModel.findOne({ name, restaurantId }).exec();
+    if (soup) {
+      return this.formatResponse(soup);
+    }
+    return null;
   }
 
-  async update(body: DrinkDto) {
-    const second = await this.drinkModel.findOneAndUpdate(
+  async update({ name, body }: { name: string; body: DrinkDto }) {
+    const drink = await this.drinkModel.findOneAndUpdate(
       {
-        name: body.name,
+        name,
         restaurantId: body.restaurantId,
       },
       body,
@@ -110,21 +113,21 @@ export class DrinkService {
         new: true,
       },
     );
-    if (!second) {
+    if (!drink) {
       throw new NotFoundException('La bebida no existe');
     }
-    return second;
+    return drink;
   }
 
-  async delete(body: DrinkDto) {
-    const second = await this.drinkModel.findOneAndDelete({
+  async delete(body: { name: string; restaurantId: string }) {
+    const drink = await this.drinkModel.findOneAndDelete({
       name: body.name,
       restaurantId: body.restaurantId,
     });
-    if (!second) {
+    if (!drink) {
       throw new NotFoundException('La bebida no existe');
     }
-    return second;
+    return drink;
   }
 
   async formatResponse(

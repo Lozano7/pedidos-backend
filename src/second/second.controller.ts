@@ -59,8 +59,11 @@ export class SecondController {
   //Editar
   @Roles('RESTAURANT')
   @Patch(':name')
-  async update(@Body() body: SecondDto) {
-    return this.secondService.update(body);
+  async update(@Param('name') name: string, @Body() body: SecondDto) {
+    return this.secondService.update({
+      name: name.split('-').join(' '),
+      body,
+    });
   }
 
   //Eliminar
@@ -74,5 +77,17 @@ export class SecondController {
       name: name.split('-').join(' '),
       restaurantId,
     });
+  }
+
+  @Roles('RESTAURANT')
+  @Get(':name/:restaurantId')
+  async getSoupByNameByRestaurantId(
+    @Param('name') name: string,
+    @Param('restaurantId') restaurantId: string,
+  ) {
+    return this.secondService.getSecondByNameByRestaurantId(
+      name.split('-').join(' '),
+      restaurantId,
+    );
   }
 }

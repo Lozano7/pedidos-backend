@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Param,
   Patch,
   Post,
   Query,
@@ -57,14 +58,35 @@ export class DessertController {
   //Editar
   @Roles('RESTAURANT')
   @Patch(':name')
-  async update(@Body() body: DessertDto) {
-    return this.dessertService.update(body);
+  async update(@Param('name') name: string, @Body() body: DessertDto) {
+    return this.dessertService.update({
+      name: name.split('-').join(' '),
+      body,
+    });
   }
 
   //Eliminar
   @Roles('RESTAURANT')
-  @Delete(':name')
-  async delete(@Body() body: DessertDto) {
-    return this.dessertService.delete(body);
+  @Delete(':name/:restaurantId')
+  async delete(
+    @Param('name') name: string,
+    @Param('restaurantId') restaurantId: string,
+  ) {
+    return this.dessertService.delete({
+      name: name.split('-').join(' '),
+      restaurantId,
+    });
+  }
+
+  @Roles('RESTAURANT')
+  @Get(':name/:restaurantId')
+  async getDessertByNameByRestaurantId(
+    @Param('name') name: string,
+    @Param('restaurantId') restaurantId: string,
+  ) {
+    return this.dessertService.getDessertByNameByRestaurantId(
+      name.split('-').join(' '),
+      restaurantId,
+    );
   }
 }

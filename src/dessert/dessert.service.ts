@@ -11,11 +11,11 @@ import { Dessert, DessertDocument } from './model/dessert.model';
 @Injectable()
 export class DessertService {
   constructor(
-    @InjectModel(Dessert.name) private drinkModel: Model<DessertDocument>,
+    @InjectModel(Dessert.name) private dessertModel: Model<DessertDocument>,
   ) {}
 
   async create(body: DessertDto) {
-    const existingData = await this.drinkModel.findOne({
+    const existingData = await this.dessertModel.findOne({
       name: body.name,
       restaurantId: body.restaurantId,
     });
@@ -23,7 +23,7 @@ export class DessertService {
       throw new InternalServerErrorException('El postre ya existe');
     }
 
-    const newData = new this.drinkModel(body);
+    const newData = new this.dessertModel(body);
     await newData.save();
     return {
       _id: newData._id.toString(),
@@ -62,7 +62,7 @@ export class DessertService {
         };
 
     if (all) {
-      const desserts = await this.drinkModel.find(query).exec();
+      const desserts = await this.dessertModel.find(query).exec();
       response = desserts.map((dt) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _id: dessertId } = dt;
@@ -73,13 +73,13 @@ export class DessertService {
         };
       });
     } else {
-      const desserts = await this.drinkModel
+      const desserts = await this.dessertModel
         .find(query)
         .skip((page - 1) * limit)
         .limit(limit)
         .exec();
 
-      const total = await this.drinkModel.countDocuments(query);
+      const total = await this.dessertModel.countDocuments(query);
 
       response = {
         data: desserts,
@@ -91,20 +91,23 @@ export class DessertService {
     return response;
   }
 
-  async getDessertByName(
+  async getDessertByNameByRestaurantId(
     name: string,
     restaurantId: string,
-  ): Promise<DessertDocument> {
-    const dessert = await this.drinkModel
+  ): Promise<DessertDocument | DessertDocument[]> {
+    const dessert = await this.dessertModel
       .findOne({ name, restaurantId })
       .exec();
-    return dessert;
+    if (dessert) {
+      return this.formatResponse(dessert);
+    }
+    return null;
   }
 
-  async update(body: DessertDto) {
-    const dessert = await this.drinkModel.findOneAndUpdate(
+  async update({ name, body }: { name: string; body: DessertDto }) {
+    const second = await this.dessertModel.findOneAndUpdate(
       {
-        name: body.name,
+        name,
         restaurantId: body.restaurantId,
       },
       body,
@@ -112,21 +115,21 @@ export class DessertService {
         new: true,
       },
     );
-    if (!dessert) {
+    if (!second) {
       throw new NotFoundException('El postre no existe');
     }
-    return dessert;
+    return second;
   }
 
-  async delete(body: DessertDto) {
-    const dessert = await this.drinkModel.findOneAndDelete({
+  async delete(body: { name: string; restaurantId: string }) {
+    const soup = await this.dessertModel.findOneAndDelete({
       name: body.name,
       restaurantId: body.restaurantId,
     });
-    if (!dessert) {
+    if (!soup) {
       throw new NotFoundException('El postre no existe');
     }
-    return dessert;
+    return soup;
   }
 
   async formatResponse(
