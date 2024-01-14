@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Pedido, PedidoDocument } from './model/pedidos.model';
 import { PedidoDto } from './dto/pedido.dto';
+import { Pedido, PedidoDocument } from './model/pedidos.model';
 
 @Injectable()
 export class PedidosService {
@@ -35,6 +35,7 @@ export class PedidosService {
     limit: number = 10,
     all: boolean = false,
     restaurantId: string = '',
+    clientId: string = '',
   ): Promise<
     | {
         data: PedidoDocument[];
@@ -54,9 +55,11 @@ export class PedidosService {
             { price: { $regex: search, $options: 'i' } },
           ],
           ...(restaurantId && { restaurantId }),
+          ...(clientId && { clientId }),
         }
       : {
           ...(restaurantId && { restaurantId }),
+          ...(clientId && { clientId }),
         };
 
     if (all) {
@@ -96,6 +99,7 @@ export class PedidosService {
     all: boolean = false,
     date: string = new Date().toLocaleDateString('en-US'),
     restaurantId: string = '',
+    clientId: string = '',
   ): Promise<
     | {
         data: PedidoDocument[];
@@ -113,9 +117,11 @@ export class PedidosService {
             { price: { $regex: search, $options: 'i' } },
           ],
           ...(restaurantId && { restaurantId }),
+          ...(clientId && { clientId }),
         }
       : {
           ...(restaurantId && { restaurantId }),
+          ...(clientId && { clientId }),
           date,
         };
 

@@ -34,6 +34,7 @@ export class PedidosController {
     @Query('all') all: boolean,
     @Query('date') date: string,
     @Query('restaurantId') restaurantId: string,
+    @Query('clientId') clientId: string,
   ) {
     let pedidos;
     if (date) {
@@ -44,6 +45,7 @@ export class PedidosController {
         all,
         date,
         restaurantId,
+        clientId,
       );
     } else {
       pedidos = await this.pedidosService.getAll(
@@ -52,6 +54,7 @@ export class PedidosController {
         limit,
         all,
         restaurantId,
+        clientId,
       );
     }
 
