@@ -11,6 +11,10 @@ export class PedidoDto {
 
   @IsNotEmpty()
   @IsString()
+  readonly nameRestaurant;
+
+  @IsNotEmpty()
+  @IsString()
   readonly clientId;
 
   @IsNotEmpty()

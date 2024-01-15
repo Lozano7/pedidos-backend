@@ -13,6 +13,9 @@ export class Pedido {
   nameClient: string;
 
   @Prop({ required: true })
+  nameRestaurant: string;
+
+  @Prop({ required: true })
   date: string;
 
   @Prop({ required: true })

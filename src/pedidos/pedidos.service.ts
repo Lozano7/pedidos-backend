@@ -50,10 +50,7 @@ export class PedidosService {
     //validar que si llega el id del restaurante se filtre por ese id en el query
     const query = search
       ? {
-          $or: [
-            { date: { $regex: search, $options: 'i' } },
-            { price: { $regex: search, $options: 'i' } },
-          ],
+          $or: [{ date: { $regex: search, $options: 'i' } }],
           ...(restaurantId && { restaurantId }),
           ...(clientId && { clientId }),
         }
@@ -112,10 +109,7 @@ export class PedidosService {
     let response = null;
     const query = search
       ? {
-          $or: [
-            { date: { $regex: search, $options: 'i' } },
-            { price: { $regex: search, $options: 'i' } },
-          ],
+          $or: [{ date: { $regex: search, $options: 'i' } }],
           ...(restaurantId && { restaurantId }),
           ...(clientId && { clientId }),
         }
