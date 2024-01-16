@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { formatDate } from 'src/utils';
 import { PedidoDto } from './dto/pedido.dto';
 import { Pedido, PedidoDocument } from './model/pedidos.model';
 
@@ -94,7 +95,7 @@ export class PedidosService {
     page: number = 1,
     limit: number = 10,
     all: boolean = false,
-    date: string = new Date().toLocaleDateString('en-US'),
+    date: string = formatDate(new Date()),
     restaurantId: string = '',
     clientId: string = '',
   ): Promise<
@@ -190,6 +191,90 @@ export class PedidosService {
       response = {
         ...result,
         _id: rstrId.toString(),
+      };
+    }
+    return response;
+  }
+
+  //funcion que deveulve todos los pedidos del dia actual donde la fecha actual debe tener el siguiente formato dd/mm/yyyy
+  async getAllByDateActual(): Promise<PedidoDocument[]> {
+    let response = null;
+    let date = formatDate(new Date());
+    const query = {
+      date,
+    };
+
+    const pedidos = await this.pedidoModel.find(query).exec();
+    response = pedidos.map((pedido) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { _id: pedidoId } = pedido;
+      const result = pedido.toJSON();
+      return {
+        ...result,
+        _id: pedidoId.toString(),
+      };
+    });
+
+    return response;
+  }
+
+  // funcion que devuelve todos los pedidos entre date de incio y date de fin
+  async getAllByDateRange(
+    search: string = '',
+    page: number = 1,
+    limit: number = 10,
+    all: boolean = false,
+    dateStart: string = formatDate(new Date()),
+    dateEnd: string = formatDate(new Date()),
+    restaurantId: string = '',
+    clientId: string = '',
+  ): Promise<
+    | {
+        data: PedidoDocument[];
+        total: number;
+        page: number;
+        limit: number;
+      }
+    | PedidoDocument[]
+  > {
+    let response = null;
+    const query = search
+      ? {
+          $or: [{ date: { $regex: search, $options: 'i' } }],
+          ...(restaurantId && { restaurantId }),
+          ...(clientId && { clientId }),
+        }
+      : {
+          ...(restaurantId && { restaurantId }),
+          ...(clientId && { clientId }),
+          date: { $gte: dateStart, $lte: dateEnd },
+        };
+
+    if (all) {
+      const pedidos = await this.pedidoModel.find(query).exec();
+      response = pedidos.map((pedido) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _id: pedidoId } = pedido;
+        const result = pedido.toJSON();
+        return {
+          ...result,
+          _id: pedidoId.toString(),
+        };
+      });
+    } else {
+      const [data, total] = await Promise.all([
+        this.pedidoModel
+          .find(query)
+          .limit(limit)
+          .skip(limit * (page - 1))
+          .exec(),
+        this.pedidoModel.countDocuments(query).exec(),
+      ]);
+      response = {
+        data,
+        total,
+        page,
+        limit,
       };
     }
     return response;

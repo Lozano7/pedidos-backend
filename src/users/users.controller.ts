@@ -34,10 +34,12 @@ export class UsersController {
     @Query('page') page: number,
     @Query('limit') limit: number,
     @Query('search') search: string,
+    @Query('all') all: boolean,
   ) {
-    const users = await this.userService.getAll(search, page, limit);
-
-    console.log(users.data);
+    const users = await this.userService.getAll(search, page, limit, all);
+    if (Array.isArray(users)) {
+      return users.map((user) => this.userService.formatResponse(user));
+    }
 
     return {
       data: await this.userService.formatResponse(users.data),

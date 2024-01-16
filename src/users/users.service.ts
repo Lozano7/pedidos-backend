@@ -43,15 +43,12 @@ export class UserService {
       restaurantId,
       identification,
     });
-    console.log('restaurantId: ', restaurantId);
-    console.log('newUser: ', newUser);
 
     return this.generateResponse(newUser); // Devuelve solo las propiedades deseadas
   }
 
   async create(body: SignUpDto) {
     const newUser = new this.userModel(body);
-    console.log('user: ', newUser);
     return newUser.save();
   }
 
@@ -59,27 +56,46 @@ export class UserService {
     search: string = '',
     page: number = 1,
     limit: number = 10,
-  ): Promise<{
-    data: UserDocument[];
-    total: number;
-    page: number;
-    limit: number;
-  }> {
+    all: boolean = false,
+  ): Promise<
+    | {
+        data: UserDocument[];
+        total: number;
+        page: number;
+        limit: number;
+      }
+    | UserDocument[]
+  > {
+    let response;
     const query = search
       ? {
           identification: { $regex: search, $options: 'i' },
         }
       : {};
-    const skip = (Number(page) - 1) * limit;
-    const data = await this.userModel
-      .find({
-        ...query,
-      })
-      .limit(limit)
-      .skip(skip);
-    const total = await this.userModel.countDocuments(query);
+    if (all) {
+      const users = await this.userModel.find(query).exec();
+      response = users.map((pedido) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { _id: pedidoId } = pedido;
+        const result = pedido.toJSON();
+        return {
+          ...result,
+          _id: pedidoId.toString(),
+        };
+      });
+    } else {
+      const skip = (Number(page) - 1) * limit;
+      const data = await this.userModel
+        .find({
+          ...query,
+        })
+        .limit(limit)
+        .skip(skip);
+      const total = await this.userModel.countDocuments(query);
 
-    return { data, total, page, limit };
+      response = { data, total, page, limit };
+    }
+    return response;
   }
 
   async update(id, body: EditUserDto) {
@@ -99,7 +115,6 @@ export class UserService {
   }
 
   async delete(identificacion: string) {
-    console.log('ID a eliminar:', identificacion);
     const user = await this.userModel.findOneAndDelete({
       identification: identificacion,
     });
@@ -120,12 +135,10 @@ export class UserService {
   async findByIdentification(
     identification: string,
   ): Promise<UserDocument | null> {
-    console.log('identification en el service: ', identification);
     const user = await this.userModel
       .findOne({ identification })
       .select('-password')
       .exec();
-    console.log('user: ', user);
     if (!user) {
       throw new Error('El usuario no existe');
     }

@@ -26,7 +26,7 @@ export class MenuController {
     return this.menuService.register(menuDto);
   }
 
-  @Roles('RESTAURANT', 'USER')
+  @Roles('RESTAURANT', 'COLLABORATOR', 'INTERN')
   @Get()
   async getAll(
     @Query('page') page: number,

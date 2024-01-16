@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { formatDate } from 'src/utils';
 import { MenuDto } from './dto/menu.dto';
 import { Menu, MenuDocument } from './models/menu.model';
 
@@ -89,7 +90,7 @@ export class MenuService {
     page: number = 1,
     limit: number = 10,
     all: boolean = false,
-    date: string = new Date().toLocaleDateString('en-US'),
+    date: string = formatDate(new Date()),
     restaurantId: string = '',
   ): Promise<
     | {

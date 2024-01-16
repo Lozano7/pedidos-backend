@@ -19,13 +19,13 @@ import { PedidosService } from './pedidos.service';
 export class PedidosController {
   constructor(private readonly pedidosService: PedidosService) {}
 
-  @Roles('USER')
+  @Roles('COLLABORATOR', 'INTERN')
   @Post()
   async register(@Body() pedido: PedidoDto) {
     return this.pedidosService.register(pedido);
   }
 
-  @Roles('RESTAURANT', 'USER')
+  @Roles('RESTAURANT', 'COLLABORATOR', 'INTERN')
   @Get()
   async getAll(
     @Query('page') page: number,
@@ -70,7 +70,7 @@ export class PedidosController {
     };
   }
 
-  @Roles('RESTAURANT', 'USER')
+  @Roles('RESTAURANT', 'COLLABORATOR', 'INTERN')
   @Get(':date/:restaurantId/:clientId')
   async getIsExistingPedido(
     @Param('date') date: string,
@@ -90,7 +90,7 @@ export class PedidosController {
   }
 
   // delete
-  @Roles('RESTAURANT', 'USER')
+  @Roles('RESTAURANT', 'COLLABORATOR', 'INTERN')
   @Delete(':id/:restaurantId/:clientId')
   async delete(
     @Param('id') id: string,
