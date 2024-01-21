@@ -62,6 +62,10 @@ export class ReportController {
       'Restaurante',
       'Fecha',
       'Tipo de Menú',
+      'Sopa',
+      'Segundo',
+      'Bebida',
+      'Postre',
       'Precio',
     ]);
 
@@ -72,6 +76,10 @@ export class ReportController {
         pedido.nameRestaurant,
         pedido.date,
         pedido.typeMenu,
+        pedido.soup,
+        pedido.second,
+        pedido.drink,
+        pedido.dessert,
         pedido.price,
       ]);
     });
