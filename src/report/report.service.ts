@@ -13,7 +13,7 @@ export class ReportService {
 
   async getDashboardData() {
     //date debe tener el formato dd/mm/yyyy
-    const pedidos = await this.pedidosService.getAllByDateActual('01/18/2024');
+    const pedidos = await this.pedidosService.getAllByDateActual();
     const users = await this.getUsers();
     const latestUsers = await this.getLatestUsers();
     // aqui comienzan las validaciones para devolver: el numero total de pedidos, el valor total a pagar por los pedidos, el restaurante al que mas pedidos le han hecho, la cantidad de pedidos, el numero de personas que han tomado un menu de dieta, y cuantos han pedio un menu normal.
@@ -63,8 +63,6 @@ export class ReportService {
         !user.roles.includes(ROLES.COLLABORATOR),
     ).length;
 
-    const pedidosByUsers = await this.getPedidosByUsers();
-
     return {
       totalPedidos,
       totalValor,
@@ -75,7 +73,6 @@ export class ReportService {
       collaborators,
       interns,
       latestUsers,
-      pedidosByUsers,
     };
   }
 
@@ -107,11 +104,28 @@ export class ReportService {
     return [];
   }
   // aqui vamos a
-  async getPedidosByUsers() {
+  async getPedidosByUsers({
+    search = '',
+    page = 1,
+    limit = 10,
+    all = false,
+    startDate = formatDate(new Date()),
+    endDate = formatDate(new Date()),
+  }: {
+    search: string;
+    page: number;
+    limit: number;
+    all: boolean;
+    startDate: string;
+    endDate: string;
+  }) {
     const pedidos = await this.pedidosService.getAllByDateRange({
-      dateStart: '01/15/2024',
-      dateEnd: '01/18/2024',
-      all: true,
+      search,
+      page,
+      limit,
+      all,
+      dateStart: startDate,
+      dateEnd: endDate,
     });
     return pedidos;
   }

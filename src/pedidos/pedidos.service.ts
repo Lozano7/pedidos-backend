@@ -200,6 +200,7 @@ export class PedidosService {
   async getAllByDateActual(dateParameter?: string): Promise<PedidoDocument[]> {
     let response = null;
     let date = dateParameter || formatDate(new Date());
+    console.log('date', date);
     const query = {
       date,
     };
