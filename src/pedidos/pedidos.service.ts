@@ -272,6 +272,7 @@ export class PedidosService {
           reportes[pedido.clientId] = {
             name: pedido.nameClient,
             roles: pedido.roles,
+            clientId: pedido.clientId,
             pedidos: [],
           };
         }
@@ -295,6 +296,7 @@ export class PedidosService {
         if (!reportes[pedido.clientId]) {
           reportes[pedido.clientId] = {
             name: pedido.nameClient,
+            clientId: pedido.clientId,
             roles: pedido.roles,
             pedidos: [],
           };

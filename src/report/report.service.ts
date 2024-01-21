@@ -119,6 +119,12 @@ export class ReportService {
     startDate: string;
     endDate: string;
   }) {
+    console.log('startDate', startDate);
+    console.log('endDate', endDate);
+    console.log('search', search);
+    console.log('page', page);
+    console.log('limit', limit);
+
     const pedidos = await this.pedidosService.getAllByDateRange({
       search,
       page,
