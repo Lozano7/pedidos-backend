@@ -1,13 +1,17 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { ROLES } from 'src/constants/roles';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Pedido {
   @Prop({ required: true })
   restaurantId: string;
 
   @Prop({ required: true })
   clientId: string;
+
+  @Prop({ required: true })
+  roles: ROLES[];
 
   @Prop({ required: true })
   nameClient: string;

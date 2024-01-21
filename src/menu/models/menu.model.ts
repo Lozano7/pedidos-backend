@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { IMenu } from '../interfaces/menu.interface';
 
-@Schema()
+@Schema({ timestamps: true })
 export class Menu {
   @Prop({ required: true, unique: true })
   date: string;

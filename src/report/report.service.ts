@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ROLES } from 'src/constants/roles';
 import { PedidosService } from 'src/pedidos/pedidos.service';
+import { formatDate } from 'src/utils';
 import { UserService } from '../users/users.service';
 
 @Injectable()
@@ -12,8 +13,9 @@ export class ReportService {
 
   async getDashboardData() {
     //date debe tener el formato dd/mm/yyyy
-    const pedidos = await this.pedidosService.getAllByDateActual('01/16/2024');
+    const pedidos = await this.pedidosService.getAllByDateActual('01/18/2024');
     const users = await this.getUsers();
+    const latestUsers = await this.getLatestUsers();
     // aqui comienzan las validaciones para devolver: el numero total de pedidos, el valor total a pagar por los pedidos, el restaurante al que mas pedidos le han hecho, la cantidad de pedidos, el numero de personas que han tomado un menu de dieta, y cuantos han pedio un menu normal.
     let totalPedidos = pedidos.length;
     let totalValor = await pedidos.reduce((acc, pedido) => {
@@ -61,6 +63,8 @@ export class ReportService {
         !user.roles.includes(ROLES.COLLABORATOR),
     ).length;
 
+    const pedidosByUsers = await this.getPedidosByUsers();
+
     return {
       totalPedidos,
       totalValor,
@@ -70,12 +74,13 @@ export class ReportService {
       cantidadUsuarios,
       collaborators,
       interns,
+      latestUsers,
+      pedidosByUsers,
     };
   }
 
   async getUsers() {
     const users = await this.userService.getAll('', 1, 10, true);
-    console.log('users', users);
     if (Array.isArray(users)) {
       return users.filter(
         (user) =>
@@ -84,5 +89,30 @@ export class ReportService {
       );
     }
     return [];
+  }
+
+  async getLatestUsers() {
+    const users = await this.userService.getLastCreatedUsers();
+    // se transforma la fecha de creacion de los usuarios al formato dd/mm/yyyy hh:mm:ss usando date-fns
+    if (Array.isArray(users)) {
+      return users.map((user) => {
+        const result = user;
+        return {
+          ...result,
+          createdAt: formatDate((user as any).createdAt, 'dd/MM/yyyy hh:mm:ss'),
+          updatedAt: formatDate((user as any).updatedAt, 'dd/MM/yyyy hh:mm:ss'),
+        };
+      });
+    }
+    return [];
+  }
+  // aqui vamos a
+  async getPedidosByUsers() {
+    const pedidos = await this.pedidosService.getAllByDateRange({
+      dateStart: '01/15/2024',
+      dateEnd: '01/18/2024',
+      all: true,
+    });
+    return pedidos;
   }
 }

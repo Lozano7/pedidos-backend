@@ -170,6 +170,16 @@ export class UserService {
     return response;
   }
 
+  // funcion que retorna los un array de los ultimos 5 usuarios creados
+  async getLastCreatedUsers(num: number = 5) {
+    const users = await this.userModel
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(num)
+      .exec();
+    return this.formatResponse(users);
+  }
+
   public async generateResponse(user: any) {
     return {
       email: user.email,

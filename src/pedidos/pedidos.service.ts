@@ -219,16 +219,25 @@ export class PedidosService {
   }
 
   // funcion que devuelve todos los pedidos entre date de incio y date de fin
-  async getAllByDateRange(
-    search: string = '',
-    page: number = 1,
-    limit: number = 10,
-    all: boolean = false,
-    dateStart: string = formatDate(new Date()),
-    dateEnd: string = formatDate(new Date()),
-    restaurantId: string = '',
-    clientId: string = '',
-  ): Promise<
+  async getAllByDateRange({
+    search = '',
+    page = 1,
+    limit = 10,
+    all = false,
+    dateStart = formatDate(new Date()),
+    dateEnd = formatDate(new Date()),
+    restaurantId = '',
+    clientId = '',
+  }: {
+    search?: string;
+    page?: number;
+    limit?: number;
+    all?: boolean;
+    dateStart?: string;
+    dateEnd?: string;
+    restaurantId?: string;
+    clientId?: string;
+  }): Promise<
     | {
         data: PedidoDocument[];
         total: number;
@@ -252,15 +261,24 @@ export class PedidosService {
 
     if (all) {
       const pedidos = await this.pedidoModel.find(query).exec();
-      response = pedidos.map((pedido) => {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { _id: pedidoId } = pedido;
-        const result = pedido.toJSON();
-        return {
-          ...result,
-          _id: pedidoId.toString(),
-        };
+
+      const pedidosFormated = await this.formatResponse(pedidos);
+
+      // Lógica para organizar los reportes por usuario
+      const reportes = {};
+      pedidosFormated.forEach((pedido) => {
+        if (!reportes[pedido.clientId]) {
+          reportes[pedido.clientId] = {
+            name: pedido.nameClient,
+            roles: pedido.roles,
+            pedidos: [],
+          };
+        }
+        reportes[pedido.clientId].pedidos.push(pedido);
       });
+
+      // Convertir el objeto a un array
+      response = Object.values(reportes);
     } else {
       const [data, total] = await Promise.all([
         this.pedidoModel
@@ -270,8 +288,21 @@ export class PedidosService {
           .exec(),
         this.pedidoModel.countDocuments(query).exec(),
       ]);
+      const pedidosFormated = await this.formatResponse(data);
+      const reportes = {};
+      pedidosFormated.forEach((pedido) => {
+        if (!reportes[pedido.clientId]) {
+          reportes[pedido.clientId] = {
+            name: pedido.nameClient,
+            roles: pedido.roles,
+            pedidos: [],
+          };
+        }
+        reportes[pedido.clientId].pedidos.push(pedido);
+      });
+
       response = {
-        data,
+        data: Object.values(reportes),
         total,
         page,
         limit,

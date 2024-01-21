@@ -4,5 +4,7 @@ export interface IUserResponse {
   name: string;
   lastName: string;
   roles: string[];
+  createdAt: Date;
+  updatedAt: Date;
   __v: number;
 }

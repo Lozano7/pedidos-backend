@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class PedidoDto {
   @IsNotEmpty()
@@ -44,4 +44,9 @@ export class PedidoDto {
   @IsNotEmpty()
   @IsString()
   readonly price;
+
+  @ArrayNotEmpty({ message: 'Los roles no pueden estar vacíos' })
+  @IsArray({ message: 'Los roles deben ser un array' })
+  @IsString({ each: true, message: 'Cada rol debe ser una cadena de texto' })
+  readonly roles;
 }
