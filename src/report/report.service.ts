@@ -111,6 +111,7 @@ export class ReportService {
     all = false,
     startDate = formatDate(new Date()),
     endDate = formatDate(new Date()),
+    roles = 'COLLABORATOR',
   }: {
     search: string;
     page: number;
@@ -118,13 +119,8 @@ export class ReportService {
     all: boolean;
     startDate: string;
     endDate: string;
+    roles: string;
   }) {
-    console.log('startDate', startDate);
-    console.log('endDate', endDate);
-    console.log('search', search);
-    console.log('page', page);
-    console.log('limit', limit);
-
     const pedidos = await this.pedidosService.getAllByDateRange({
       search,
       page,
@@ -132,6 +128,7 @@ export class ReportService {
       all,
       dateStart: startDate,
       dateEnd: endDate,
+      roles,
     });
     return pedidos;
   }

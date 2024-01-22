@@ -229,6 +229,7 @@ export class PedidosService {
     dateEnd = formatDate(new Date()),
     restaurantId = '',
     clientId = '',
+    roles = 'COLLABORATOR',
   }: {
     search?: string;
     page?: number;
@@ -238,6 +239,7 @@ export class PedidosService {
     dateEnd?: string;
     restaurantId?: string;
     clientId?: string;
+    roles?: string;
   }): Promise<
     | {
         data: PedidoDocument[];
@@ -250,14 +252,20 @@ export class PedidosService {
     let response = null;
     const query = search
       ? {
-          $or: [{ date: { $regex: search, $options: 'i' } }],
+          $or: [
+            { nameClient: { $regex: search, $options: 'i' } },
+            { clientId: { $regex: search, $options: 'i' } },
+          ],
           ...(restaurantId && { restaurantId }),
           ...(clientId && { clientId }),
+          roles: { $regex: roles, $options: 'i' },
         }
       : {
           ...(restaurantId && { restaurantId }),
           ...(clientId && { clientId }),
           date: { $gte: dateStart, $lte: dateEnd },
+          //en roles se debe pasar un array de roles y verificar que tenga este roll
+          roles: { $regex: roles, $options: 'i' },
         };
 
     if (all) {
