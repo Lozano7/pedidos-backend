@@ -16,35 +16,19 @@
       "src": "/(.*)",
       "dest": "dist/main.js",
       "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "https://pedidos-backend-bbln.vercel.app"
-      },
-      "preflight": true,
-      "allowedHeaders": [
-        "Content-Type",
-        "Authorization",
-        "credentials",
-        "X-Requested-With",
-        "Accept",
-        "Origin",
-        "cors",
-        "cookie",
-        "Access-Control-Allow-Headers",
-        "Access-Control-Allow-Origin",
-        "Access-Control-Allow-Credentials"
+      "headers": [
+        { "key": "Access-Control-Allow-Credentials", "value": "true" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+        }
       ],
-      "exposedHeaders": [
-        "Authorization",
-        "credentials",
-        "Access-Control-Allow-Headers",
-        "Access-Control-Allow-Origin",
-        "Access-Control-Allow-Credentials",
-        "Content-Type",
-        "X-Requested-With",
-        "Accept",
-        "Origin",
-        "cors"
-      ]
+      "preflight": true
     }
   ]
 }
