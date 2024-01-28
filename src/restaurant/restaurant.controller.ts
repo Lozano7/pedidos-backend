@@ -14,7 +14,9 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { RestaurantDto } from './dto/restaurant.dto';
 import { RestaurantService } from './restaurant.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('restaurants')
 @Controller('restaurants')
 @UseGuards(AuthGuard, RolesGuard)
 export class RestaurantController {

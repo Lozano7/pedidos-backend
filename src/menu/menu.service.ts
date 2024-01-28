@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { formatDate } from 'src/utils';
@@ -12,7 +16,7 @@ export class MenuService {
   async register(body: MenuDto) {
     const existingMenu = await this.findByDate(body.date, body.restaurantId);
     if (existingMenu) {
-      throw new NotFoundException('El menu ya fue registrado en esa fecha');
+      throw new BadRequestException('El menu ya fue registrado en esa fecha');
     }
 
     const newRestaurant = await this.create(body);

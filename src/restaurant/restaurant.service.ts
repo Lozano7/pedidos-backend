@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { RestaurantDto } from './dto/restaurant.dto';
@@ -24,7 +28,7 @@ export class RestaurantService {
   }: RestaurantDto) {
     const existingRestaurant = await this.findByRuc(ruc);
     if (existingRestaurant) {
-      throw new NotFoundException('El restaurante ya existe');
+      throw new BadRequestException('El restaurante ya existe');
     }
 
     const newRestaurant = await this.create({

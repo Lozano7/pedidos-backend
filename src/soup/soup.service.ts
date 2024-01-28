@@ -1,6 +1,6 @@
 import {
+  BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -18,7 +18,7 @@ export class SoupService {
       restaurantId: body.restaurantId,
     });
     if (existingSoup) {
-      throw new InternalServerErrorException('La sopa ya existe');
+      throw new BadRequestException('La sopa ya existe');
     }
 
     const newSoup = new this.soupModel(body);

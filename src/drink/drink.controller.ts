@@ -9,12 +9,14 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { DrinkService } from './drink.service';
 import { DrinkDto } from './dto/drinkDto';
 
+@ApiTags('drink')
 @Controller('drink')
 @UseGuards(AuthGuard, RolesGuard)
 export class DrinkController {

@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory, Reflector } from '@nestjs/core';
 import * as dotenv from 'dotenv';
 import * as morgan from 'morgan';
+import { setupSwagger } from 'swagger.config';
 import { AppModule } from './app.module';
 import { CORS } from './constants';
 
@@ -30,6 +31,8 @@ async function bootstrap() {
   app.enableCors(CORS);
 
   app.setGlobalPrefix('api');
+
+  setupSwagger(app);
 
   await app.listen(process.env.PORT || configService.get('PORT') || 3000);
 }

@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
@@ -16,6 +17,7 @@ import { EditUserDto } from './dto/editUserDto';
 import { SignUpDto } from './dto/signUpDto';
 import { UserService } from './users.service';
 
+@ApiTags('users')
 @Controller('users')
 @UseGuards(AuthGuard, RolesGuard)
 export class UsersController {

@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { formatDate } from 'src/utils';
@@ -18,7 +22,9 @@ export class PedidosService {
       body.clientId,
     );
     if (existingPedido) {
-      throw new NotFoundException('Ya tiene un pedido registrado en esa fecha');
+      throw new BadRequestException(
+        'Ya tiene un pedido registrado en esa fecha',
+      );
     }
 
     const newPedido = await this.create(body);

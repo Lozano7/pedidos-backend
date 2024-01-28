@@ -1,6 +1,6 @@
 // user.service.ts
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
@@ -23,9 +23,9 @@ export class UserService {
     restaurantId,
   }: SignUpDto) {
     // Verifica si el usuario ya existe
-    const existingUser = await this.findByEmail(email);
+    const existingUser = await this.findByEmailAndId(email, identification);
     if (existingUser) {
-      throw new UnauthorizedException('El usuario ya existe');
+      throw new BadRequestException('El usuario ya existe');
     }
     // Valida la contraseña
     if (!this.validatePassword(password)) {
@@ -126,6 +126,13 @@ export class UserService {
 
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
+  }
+
+  async findByEmailAndId(
+    email: string,
+    identification: string,
+  ): Promise<UserDocument | null> {
+    return this.userModel.findOne({ email, identification }).exec();
   }
 
   async findById(id: string): Promise<UserDocument | null> {

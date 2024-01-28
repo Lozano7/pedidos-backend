@@ -1,6 +1,6 @@
 // auth.service.ts
 
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from 'src/users/users.service';
@@ -47,9 +47,12 @@ export class AuthService {
     restaurantId,
   }: SignUpDto) {
     // Verifica si el usuario ya existe
-    const existingUser = await this.usersService.findByEmail(email);
+    const existingUser = await this.usersService.findByEmailAndId(
+      email,
+      identification,
+    );
     if (existingUser) {
-      throw new UnauthorizedException('El usuario ya existe');
+      throw new BadRequestException('El usuario ya existe');
     }
 
     // Valida la contraseña
