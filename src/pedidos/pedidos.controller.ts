@@ -93,12 +93,12 @@ export class PedidosController {
 
   // delete
   @Roles('RESTAURANT', 'COLLABORATOR', 'INTERN')
-  @Delete(':id/:restaurantId/:clientId')
+  @Delete(':date/:restaurantId/:clientId')
   async delete(
-    @Param('id') id: string,
+    @Param('date') date: string,
     @Param('restaurantId') restaurantId: string,
     @Param('clientId') clientId: string,
   ) {
-    return this.pedidosService.delete(id, restaurantId, clientId);
+    return this.pedidosService.delete(date, restaurantId, clientId);
   }
 }
