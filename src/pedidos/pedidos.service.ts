@@ -6,15 +6,15 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { formatDate } from 'src/utils';
+import { WebsocketGateway } from 'src/websockets/websocket.gatwway';
 import { PedidoDto } from './dto/pedido.dto';
 import { Pedido, PedidoDocument } from './model/pedidos.model';
-import { PedidosGateway } from './pedidos.gateway';
 
 @Injectable()
 export class PedidosService {
   constructor(
     @InjectModel(Pedido.name) private pedidoModel: Model<PedidoDocument>,
-    private pedidosGateway: PedidosGateway,
+    private pedidosGateway: WebsocketGateway,
   ) {}
 
   async register(body: PedidoDto) {
