@@ -7,8 +7,11 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Pedido } from 'src/pedidos/interfaces/pedidos.interface';
+import { CORS } from '../constants/cors';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: CORS,
+})
 export class WebsocketGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {

@@ -5,7 +5,6 @@ import * as dotenv from 'dotenv';
 import * as morgan from 'morgan';
 import { setupSwagger } from 'swagger.config';
 import { AppModule } from './app.module';
-import { CORS } from './constants';
 
 //Carga las variables de entorno desde el archivo .env
 dotenv.config();
@@ -28,7 +27,9 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  app.enableCors(CORS);
+  app.enableCors({
+    origin: '*', // Reemplaza '*' con la URL de tu frontend
+  });
 
   app.setGlobalPrefix('api');
 
