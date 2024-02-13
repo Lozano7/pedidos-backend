@@ -8,11 +8,13 @@ import { Model } from 'mongoose';
 import { formatDate } from 'src/utils';
 import { PedidoDto } from './dto/pedido.dto';
 import { Pedido, PedidoDocument } from './model/pedidos.model';
+import { PedidosGateway } from './pedidos.gateway';
 
 @Injectable()
 export class PedidosService {
   constructor(
     @InjectModel(Pedido.name) private pedidoModel: Model<PedidoDocument>,
+    private pedidosGateway: PedidosGateway,
   ) {}
 
   async register(body: PedidoDto) {
@@ -28,7 +30,10 @@ export class PedidosService {
     }
 
     const newPedido = await this.create(body);
-    return this.formatResponse(newPedido);
+    const pedidoFormated = await this.formatResponse(newPedido);
+
+    this.pedidosGateway.handleNewPedido(pedidoFormated, body.restaurantId);
+    return pedidoFormated;
   }
 
   async create(body: any) {
