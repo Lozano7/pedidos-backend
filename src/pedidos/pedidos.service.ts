@@ -171,6 +171,24 @@ export class PedidosService {
     return pedido;
   }
 
+  async updateStatus(body: PedidoDto, status: string) {
+    const pedido = await this.pedidoModel.findOneAndUpdate(
+      {
+        date: body.date,
+        restaurantId: body.restaurantId,
+        clientId: body.clientId,
+      },
+      { status },
+      { new: true },
+    );
+
+    if (!pedido) {
+      throw new NotFoundException('El pedido no existe');
+    }
+    const pedidoFormated = await this.formatResponse(pedido);
+    return pedidoFormated;
+  }
+
   async delete(date: string, restaurantId: string, clientId: string) {
     let dateFormated = date.split('-').join('/');
     const pedido = await this.pedidoModel.findOneAndDelete({

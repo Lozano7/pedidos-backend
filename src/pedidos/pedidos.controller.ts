@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
   UseGuards,
@@ -91,8 +92,25 @@ export class PedidosController {
     return this.pedidosService.formatResponse(pedido);
   }
 
+  // update status
+  @Roles('RESTAURANT')
+  @Patch(':date/:restaurantId/:clientId')
+  async updateStatus(
+    @Body()
+    body: {
+      status: string;
+      data: PedidoDto;
+    },
+    @Param('date') date: string,
+    @Param('restaurantId') restaurantId: string,
+    @Param('clientId') clientId: string,
+  ) {
+    const { data, status } = body;
+    return this.pedidosService.updateStatus(data, status);
+  }
+
   // delete
-  @Roles('RESTAURANT', 'COLLABORATOR', 'INTERN')
+  @Roles('COLLABORATOR', 'INTERN')
   @Delete(':date/:restaurantId/:clientId')
   async delete(
     @Param('date') date: string,
