@@ -39,6 +39,9 @@ export class Pedido {
 
   @Prop({ required: true })
   price: number;
+
+  @Prop({ required: true })
+  status: string;
 }
 
 export type PedidoDocument = Pedido & Document;
