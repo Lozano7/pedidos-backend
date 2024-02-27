@@ -106,6 +106,7 @@ export class AuthService {
       fullName: `${user.name} ${user.lastName}`,
       name: user.name,
       lastName: user.lastName,
+      nameRestaurant: user?.nameRestaurant || null,
     };
     return {
       identification: user.identification,
@@ -115,6 +116,7 @@ export class AuthService {
       name: user.name,
       lastName: user.lastName,
       restaurantId: user?.restaurantId || null,
+      nameRestaurant: user?.nameRestaurant || null,
       access_token: this.jwtService.sign(payload),
     };
   }
