@@ -4,12 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import dayjs from 'dayjs';
 import { Model } from 'mongoose';
 import { formatDate } from 'src/utils';
 import { WebsocketGateway } from 'src/websockets/websocket.gatwway';
 import { PedidoDto } from './dto/pedido.dto';
 import { Pedido, PedidoDocument } from './model/pedidos.model';
+
 @Injectable()
 export class PedidosService {
   constructor(
@@ -228,7 +228,7 @@ export class PedidosService {
   //funcion que deveulve todos los pedidos del dia actual donde la fecha actual debe tener el siguiente formato dd/mm/yyyy
   async getAllByDateActual(dateParameter?: string): Promise<PedidoDocument[]> {
     let response = null;
-    let date = dateParameter || dayjs().format('MM/DD/YYYY');
+    let date = dateParameter || formatDate(new Date());
     console.log('date', date);
     const query = {
       date,
