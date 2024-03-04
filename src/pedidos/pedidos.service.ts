@@ -230,7 +230,6 @@ export class PedidosService {
   async getAllByDateActual(dateParameter?: string): Promise<PedidoDocument[]> {
     let response = null;
     let date = dateParameter || dayjs().format('MM/DD/YYYY');
-    console.log('date', date);
     const query = {
       date,
     };
