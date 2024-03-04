@@ -228,7 +228,7 @@ export class PedidosService {
   //funcion que deveulve todos los pedidos del dia actual donde la fecha actual debe tener el siguiente formato dd/mm/yyyy
   async getAllByDateActual(dateParameter?: string): Promise<PedidoDocument[]> {
     let response = null;
-    let date = dateParameter || dayjs().format('DD/MM/YYYY');
+    let date = dateParameter || dayjs().format('MM/DD/YYYY');
     console.log('date', date);
     const query = {
       date,
